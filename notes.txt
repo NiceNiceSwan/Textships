@@ -1,0 +1,14 @@
+10 10
+detection range 2
+so detected in a square from
+8 12            12 12
+
+
+          x
+
+
+8 8             12 8
+
+7 12, 13 12
+7 - 10 = -3 abs = 3 // true
+12 - 10 = 2 // true
