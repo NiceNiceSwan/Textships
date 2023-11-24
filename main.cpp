@@ -21,6 +21,7 @@ int main()
     // *player_left_y_spawning_boundary = 0;
     // *player_right_x_spawning_boundary = 40;
     // *player_right_y_spawning_boundary = 10;
+    // TODO: put this into a function so we could throw away the spawning boundaries after set up
     player_configuration(fleet1, map_max_size_x, map_max_size_y);
     system("CLS");
     std::cout << "Waiting for 2nd player, press any key when ready";
@@ -37,6 +38,7 @@ int main()
     // player_right_x_spawning_boundary = nullptr;
     // player_right_y_spawning_boundary = nullptr;
     system("CLS");
+    // pętla tur, gdzie momentem końcowym jest kompletne zniszczenie jednej z flot. Nie, nie ma opcji wyjścia wcześniej :)
     while (!(fleet1.empty() || fleet2.empty()))
     {
         std::cout << "Player 1 turn, press any key to continue";
@@ -54,6 +56,5 @@ int main()
         // TODO: some way to notify the players that their ships have been damaged/destroyed
     }
     
-    // TODO: pętla tur, gdzie momentem końcowym będzie kompletne zniszczenie jednej z flot. Nie, nie będzie opcji wyjścia wcześniej :)
     player_interface(1,fleet1,fleet2);
 }

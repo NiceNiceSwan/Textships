@@ -73,6 +73,7 @@ void ship_spotter(std::vector<ship> fleet_that_spots, std::vector<ship> fleet_be
         for (size_t j = 0; j < fleet_being_spotted.size(); j++)
         {
             // TODO: implement a detection probability when the ship is outside the certain detection range, but inside the uncertain detection range
+            // a simple rand() generated number, if the number is above/below x the ship is spotted/not spotted
             distance_x_between_ships = std::abs(fleet_that_spots[i].position_x - fleet_being_spotted[j].position_x);
             distance_y_between_ships = std::abs(fleet_that_spots[i].position_y - fleet_being_spotted[j].position_y);
             if (distance_x_between_ships <= fleet_being_spotted[j].certain_detection_range && distance_y_between_ships <= fleet_being_spotted[j].certain_detection_range)
@@ -138,9 +139,6 @@ int hit_calculator(ship &attacking_ship, ship &targeted_ship)
 
 void fire_at_coordinates(std::vector<ship> &attacking_fleet, std::vector<ship> &target_fleet, std::vector<bool> spotted_ships_id)
 {
-    // TODO: convert some of those into pointers using the new and delete thingies
-    // Like i do realize it's so light that we don't need to do shit like this, especially in this relatively small function
-    // but I just want to do it
     int x;
     int y;
     int attacking_ship_id;
@@ -150,6 +148,8 @@ void fire_at_coordinates(std::vector<ship> &attacking_fleet, std::vector<ship> &
     // maybe I could put it in a separate function if I feel like this block of code is getting too long and unwieldy
     do
     {
+        // TODO: change this so that the ship ID input goes first, we could do a reload check first before moving
+        // on to inputing target coordinates
         std::cout << "Input target coordinates:\n"
         << "x: ";
         std::cin >> x;
@@ -174,6 +174,7 @@ void fire_at_coordinates(std::vector<ship> &attacking_fleet, std::vector<ship> &
             ready_to_fire = true;
         }
     } while (!ready_to_fire);
+    // FIXME: we have no way of leaving the loop if no target is in range or no ship has it's guns reloaded
     std::cout << "The ship is ready to fire, are you sure you want to fire? (0 - No, 1 - Yes): ";
     std::cin >> ready_to_fire;
     // I could put this in a separate function too
@@ -183,6 +184,8 @@ void fire_at_coordinates(std::vector<ship> &attacking_fleet, std::vector<ship> &
         if (ship_finder_at_coordinates(target_fleet, x, y, targeted_ship_id))
         {
             shot_handler(attacking_fleet[attacking_ship_id], target_fleet[targeted_ship_id], spotted_ships_id[targeted_ship_id]);
+            // TODO: all the stuff that happens when a ship's HP reaches 0
+            // also some way to notify the other player that his ship has been damaged / sunk
         }
         else
         {
@@ -258,7 +261,9 @@ bool player_interface(int player, std::vector<ship> &current_player_fleet, std::
         return true;
         break;
     case 3:
-        std::cout << "Order ships to move placeholder\n"; // TODO: a function to have the ship move to destination coordinates, probably using the bresenham's line algorithm
+        // TODO: a function to have the ship move to destination coordinates, probably using the bresenham's line algorithm
+        // although we may ignore the algorithm if the destination is within the ship's move range
+        std::cout << "Order ships to move placeholder\n"; 
         return true;
         break;
     default:
@@ -267,4 +272,59 @@ bool player_interface(int player, std::vector<ship> &current_player_fleet, std::
     }
 }
 
+// TODO: all of this stuff below
+// Ten kod ma za zadanie sprawdzać pozycję wszystkich statków na mapie, brać od gracza ID statku który chce przemieścić,
+// koordynaty do których chce go przemieścić, sprawdzić czy te koordynaty są w zasięgu ruchu tego statku w jednej turze (prędkości)
+// i zależnie od tego przemieścić statek do jakiegoś pola
+// w wypadku gdy gracz chce przemieścić statek do pozycji w której znajduje się inny jego statek, to nie powinno mu pozwolić przenieść go wogóle
+// jeśli chce przemieścić go na pozycję na której znajduje się statek wroga, powinno go postawić zaraz obok tego statku, najlepiej w kierunku z którego
+// ten statek wyruszył
+// przykład: 
+// gracz 1 ma statek na pozycji 0x 0y, a gracz 2 ma statek na pozycji 2x 2y
+// jeśli gracz 1 spróbuje przmieścić swój statek na pozycję 2x 2y, to statek zostanie cofnięty na pozycję 1x 1y, najlepiej refundując
+// jeden punkt ruchu statku (czyli zamiast zabrać 2, zabierze 1)
+void ship_movement_handler(std::vector<ship> &current_player_fleet, std::vector<ship> other_player_fleet)
+{
+    // I will have to check not only for other ships of the same player, but also ships of the other player. 
+    // This makes me depressed
+    std::cout << "Choose the ship with which you want to move:\n";
+    int id_of_ship_being_moved;
+    std::cin >> id_of_ship_being_moved;
+    std::cout << "Input destination coordinates:\n"
+    << "x: ";
+    std::cin >> current_player_fleet[id_of_ship_being_moved].destination_x;
+    std::cout << "y: ";
+    std::cin >> current_player_fleet[id_of_ship_being_moved].destination_y;
+}
 
+void ship_mover(ship &ship_being_moved, std::vector<ship> other_player_fleet)
+{
+    int distance_x_to_destination = std::abs(ship_being_moved.position_x - ship_being_moved.destination_x);
+    int distance_y_to_destination = std::abs(ship_being_moved.position_y - ship_being_moved.destination_y);
+    if (distance_x_to_destination <= ship_being_moved.speed)
+    {
+        for (size_t i = 0; i < other_player_fleet.size(); i++)
+        {
+            if (destination_same_as_another_ships_position(ship_being_moved, other_player_fleet))
+            {
+                /* code */
+            }
+            
+        }
+        
+    }
+    
+}
+
+bool destination_same_as_another_ships_position(ship ship_being_moved, std::vector<ship> fleet_to_check)
+{
+    for (size_t i = 0; i < fleet_to_check.size(); i++)
+    {
+        if (ship_being_moved.destination_x == fleet_to_check[i].position_x && ship_being_moved.destination_y == fleet_to_check[i].position_y)
+        {
+            return true;
+        }
+    }
+    return false;
+    
+}
