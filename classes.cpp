@@ -16,6 +16,7 @@ void ship::battleship(int num)
     armor_penetration = 20;
     gun_range = 7;
     speed = 2;
+    moves_left_in_turn = speed;
     dodge_chance = 0;
     cost = 100;
 }
@@ -35,6 +36,7 @@ void ship::cruiser(int num)
     armor_penetration = 8;
     gun_range = 5;
     speed = 3;
+    moves_left_in_turn = speed;
     dodge_chance = 25;
     cost = 70;
 }
@@ -54,6 +56,7 @@ void ship::destroyer(int num)
     armor_penetration = 2;
     gun_range = 3;
     speed = 4;
+    moves_left_in_turn = speed;
     dodge_chance = 50;
     cost = 50;
 }
@@ -68,7 +71,8 @@ void ship::print_detailed_ship_info()
     << "\nFires every " << reload_time << " turns"
     << "\nAccuracy:" << accuracy << "%"
     << "\nChance to hit maneuvering target" << dodging_target_hit_chance
-    << "\nMoves once every " << speed << " turn"
+    << "\nCan move " << speed << " tiles in a single turn"
+    << "\nCan still move " << moves_left_in_turn << " tiles in this turn"
     << "\nChance to dodge: " << dodge_chance
     << "\nCurrent coordinates: " << position_x << "x " << position_y << "y"
     << "\nCurrent destination: " << destination_x << "x " << destination_y << "y\n";
@@ -81,6 +85,6 @@ void ship::print_short_ship_info()
     << "\nHP: " << hp
     << ", Time to reload: " << time_to_reload
     << ", Current coordinates: " << position_x << "x " << position_y << "y"
-    << ", Current destination: " << destination_x << "x " << destination_y << "y\n";
+    << ", Moves remaining: " << moves_left_in_turn << "\n";
 }
 

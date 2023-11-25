@@ -17,6 +17,7 @@ class ship
         int accuracy;
         int dodging_target_hit_chance;
         int speed;
+        int moves_left_in_turn;
         int dodge_chance;
         int certain_detection_range;
         int uncertain_detection_range;
