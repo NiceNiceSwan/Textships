@@ -37,24 +37,32 @@ int main()
     // player_left_y_spawning_boundary = nullptr;
     // player_right_x_spawning_boundary = nullptr;
     // player_right_y_spawning_boundary = nullptr;
-    system("CLS");
-    // pętla tur, gdzie momentem końcowym jest kompletne zniszczenie jednej z flot. Nie, nie ma opcji wyjścia wcześniej :)
-    while (!(fleet1.empty() || fleet2.empty()))
+    while (!(fleet1.size() == 0 || fleet2.size() == 0))
     {
+        system("CLS");
         std::cout << "Player 1 turn, press any key to continue";
         getch();
         system("CLS");
-        while (player_interface(1,fleet1,fleet2))
+        player_interface(1,fleet1,fleet2);
+        ship_killer(fleet2);
+        if (fleet2.size() == 0)
         {
+            break;
         }
+        system("CLS");
         std::cout << "Player 2 turn, press any key to continue";
         getch();
         system("CLS");
-        while (player_interface(2,fleet2,fleet1))
+        player_interface(2,fleet2,fleet1);
+        ship_killer(fleet1);
+        end_turn_handler(fleet1, fleet2);
+        if (fleet1.size() == 0)
         {
+            break;
         }
+        
         // TODO: some way to notify the players that their ships have been damaged/destroyed
+        // TODO: a function to handle all the things that happen after a turn ends for both players, 
+        // like removing dead ships, restoring movement points, forwarding the reload timer
     }
-    
-    player_interface(1,fleet1,fleet2);
 }
