@@ -234,7 +234,7 @@ void shot_handler(ship &attacking_ship, ship &targeted_ship, bool target_is_spot
     
 }
 
-bool player_interface(int player, std::vector<ship> &current_player_fleet, std::vector<ship> &other_player_fleet)
+void player_interface(int player, std::vector<ship> &current_player_fleet, std::vector<ship> &other_player_fleet)
 {
     std::cout << "Player " << player << " turn\n";
     std::cout << "Ship statistics: \n";
@@ -246,6 +246,14 @@ bool player_interface(int player, std::vector<ship> &current_player_fleet, std::
     std::cout << "\n\nDetected enemy ships:\n"; 
     std::vector<bool> spotted_ships_id(other_player_fleet.size(), false);
     ship_spotter(current_player_fleet, other_player_fleet, spotted_ships_id);
+    while (main_action_selector(current_player_fleet, other_player_fleet, spotted_ships_id))
+    {
+    }
+    
+}
+
+bool main_action_selector(std::vector<ship> &current_player_fleet, std::vector<ship> &other_player_fleet, std::vector<bool> spotted_ships_id)
+{
     std::cout << "\nChoose option: "
     << "\n(0) End turn"
     << "\n(1) Show detailed ship info"
@@ -254,36 +262,35 @@ bool player_interface(int player, std::vector<ship> &current_player_fleet, std::
     int ship_id_to_get_detailed_info;
     bool end_turn_prompt;
     switch (get_choice())
-    {
-    case 0:
-        std::cout << "Are you sure you want to end your turn?\n"
-        << "(0) - No\n(1) - Yes\n";
-        std::cin >> end_turn_prompt;
-        if (end_turn_prompt)
         {
-            return false;
+        case 0:
+            std::cout << "Are you sure you want to end your turn?\n"
+            << "(0) - No\n(1) - Yes\n";
+            std::cin >> end_turn_prompt;
+            if (end_turn_prompt)
+            {
+                return false;
+            }
+            return true;
+            break;
+        case 1:
+            std::cout << "Input the ID of the ship you want to see\n";
+            std::cin >> ship_id_to_get_detailed_info;
+            current_player_fleet[ship_id_to_get_detailed_info].print_detailed_ship_info();
+            return true;
+            break;
+        case 2:
+            fire_at_coordinates(current_player_fleet, other_player_fleet, spotted_ships_id);
+            return true;
+            break;
+        case 3:
+            order_ship_to_move(current_player_fleet, other_player_fleet);
+            return true;
+            break;
+        default:
+            return true;
+            break;
         }
-        return true;
-        break;
-    case 1:
-        std::cout << "Input the ID of the ship you want to see\n";
-        std::cin >> ship_id_to_get_detailed_info;
-        current_player_fleet[ship_id_to_get_detailed_info].print_detailed_ship_info();
-        return true;
-        break;
-    case 2:
-        fire_at_coordinates(current_player_fleet, other_player_fleet, spotted_ships_id);
-        return true;
-        break;
-    case 3:
-        // TODO: a function to have the ship move to destination coordinates
-        order_ship_to_move(current_player_fleet, other_player_fleet);
-        return true;
-        break;
-    default:
-        return true;
-        break;
-    }
 }
 
 // TODO: all of this stuff below
@@ -297,7 +304,7 @@ bool player_interface(int player, std::vector<ship> &current_player_fleet, std::
 // gracz 1 ma statek na pozycji 0x 0y, a gracz 2 ma statek na pozycji 2x 2y
 // jeśli gracz 1 spróbuje przmieścić swój statek na pozycję 2x 2y, to statek zostanie cofnięty na pozycję 1x 1y, najlepiej refundując
 // jeden punkt ruchu statku (czyli zamiast zabrać 2, zabierze 1)
-// btw, zrozumiałem właśnie że NIE potrzebujemy algorytmu bresenhama
+// I never want to have anything to do with coordinates ever again
 void order_ship_to_move(std::vector<ship> &player_fleet, std::vector<ship> other_fleet)
 {
     std::cout << "Choose the ship with which you want to move:\n";
@@ -392,4 +399,47 @@ void ship_destination_clear(std::vector<ship> &current_fleet, int id_selected_sh
             distance_y_to_destination++;
         }
     }
+}
+
+void end_turn_handler(std::vector<ship> &fleet1, std::vector<ship> &fleet2)
+{
+    for (size_t i = 0; i < fleet1.size(); i++)
+    {
+        if (fleet1[i].time_to_reload > 0)
+        {
+            fleet1[i].time_to_reload -= 1;
+        }
+        fleet1[i].moves_left_in_turn = fleet1[i].speed;
+    }
+    for (size_t i = 0; i < fleet2.size(); i++)
+    {
+        if (fleet2[i].time_to_reload > 0)
+        {
+            fleet2[i].time_to_reload -= 1;
+        }
+        fleet2[i].moves_left_in_turn = fleet2[i].speed;     
+    }
+    
+}
+
+void ship_killer(std::vector<ship> &fleet)
+{
+    if (fleet.size() == 1)
+    {
+        if (fleet[0].hp <= 0)
+        {
+            fleet.clear();
+        }
+        
+    }
+    
+    for (size_t i = 0; i < fleet.size(); i++)
+    {
+        if (fleet[i].hp <= 0)
+        {
+            fleet.erase(fleet.begin()+i);
+        }
+        
+    }
+    
 }
