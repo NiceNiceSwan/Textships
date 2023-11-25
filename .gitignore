@@ -9,3 +9,9 @@ rooster.exe
 notes.txt
 
 functions_graveyard.txt
+
+*.dll
+
+*.zip
+
+*.rar
