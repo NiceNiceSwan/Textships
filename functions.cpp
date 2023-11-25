@@ -195,6 +195,7 @@ void fire_at_coordinates(std::vector<ship> &attacking_fleet, std::vector<ship> &
     int targeted_ship_id;
     if (ready_to_fire)
     {
+        attacking_fleet[attacking_ship_id].time_to_reload = attacking_fleet[attacking_ship_id].reload_time;
         if (ship_finder_at_coordinates(target_fleet, x, y, targeted_ship_id))
         {
             shot_handler(attacking_fleet[attacking_ship_id], target_fleet[targeted_ship_id], spotted_ships_id[targeted_ship_id]);
@@ -276,7 +277,7 @@ bool player_interface(int player, std::vector<ship> &current_player_fleet, std::
         break;
     case 3:
         // TODO: a function to have the ship move to destination coordinates
-        std::cout << "Order ships to move placeholder\n"; 
+        order_ship_to_move(current_player_fleet, other_player_fleet);
         return true;
         break;
     default:
@@ -302,14 +303,26 @@ void order_ship_to_move(std::vector<ship> &player_fleet, std::vector<ship> other
     std::cout << "Choose the ship with which you want to move:\n";
     int id_of_ship_being_moved;
     std::cin >> id_of_ship_being_moved;
+    if (player_fleet[id_of_ship_being_moved].moves_left_in_turn <= 0)
+    {
+        // std::cout << "This shit cannot move anymore in this turn\n"; -- this was a missclick, but it's so funny
+        // that i'll let it be
+        std::cout << "This ship cannot move anymore in this turn\n";
+        return;
+    }
     std::cout << "Input destination coordinates:\n"
     << "x: ";
     std::cin >> player_fleet[id_of_ship_being_moved].destination_x;
     std::cout << "y: ";
     std::cin >> player_fleet[id_of_ship_being_moved].destination_y;
+    if (player_fleet[id_of_ship_being_moved].destination_x == player_fleet[id_of_ship_being_moved].position_x && player_fleet[id_of_ship_being_moved].destination_y == player_fleet[id_of_ship_being_moved].position_y)
+    {
+        return;
+    }
+    
     // look ok i'm sorry I don't think there is a better way of doing this because of the insane amount
     // of checks we need to make
-    // ship_next_position_handler(player_fleet[id_of_ship_being_moved]);
+    ship_next_position_handler(player_fleet, id_of_ship_being_moved, other_fleet);
 }
 
 void ship_next_position_handler(std::vector<ship> &current_fleet, int id_selected_ship, std::vector<ship> other_fleet)
@@ -347,8 +360,12 @@ void ship_next_position_handler(std::vector<ship> &current_fleet, int id_selecte
         }      
     }  
     ship_destination_clear(current_fleet, id_selected_ship, other_fleet, distance_x_to_destination, distance_y_to_destination);
-    current_fleet[id_selected_ship].position_x += distance_x_to_destination;
-    current_fleet[id_selected_ship].position_y += distance_y_to_destination;
+    // current_fleet[id_selected_ship].position_x += distance_x_to_destination;
+    // current_fleet[id_selected_ship].position_y += distance_y_to_destination;
+    distance_x_to_destination = current_fleet[id_selected_ship].destination_x - current_fleet[id_selected_ship].position_x;
+    distance_y_to_destination = current_fleet[id_selected_ship].destination_y - current_fleet[id_selected_ship].position_y;
+    current_fleet[id_selected_ship].position_x = current_fleet[id_selected_ship].destination_x;
+    current_fleet[id_selected_ship].position_y = current_fleet[id_selected_ship].destination_y;
     current_fleet[id_selected_ship].moves_left_in_turn -= std::max(std::abs(distance_x_to_destination), std::abs(distance_y_to_destination));
     return;
     
