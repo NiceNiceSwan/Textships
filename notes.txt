@@ -1,14 +1,33 @@
-10 10
-detection range 2
-so detected in a square from
-8 12            12 12
+case 1:
+player moves to a position withing range and with no other ship on it, friendly or not
+case 2:
+player moves to a position outside his range with no other ship on it, friendly or not
+    subcase 2a:
+    player moves to a position outside his x range with no other ship on it, friendly or not
+    subcase 2b:
+    player moves to a position outside his y range with no other ship on it, friendly or not
+    subcase 3c:
+    player moves to a position outside his x and y range with no other ship on it, friendly or not
+case 3:
+player moves to a position within his range with another ship on that position
+    subcase 3a:
+    player moves to a position within his range with another friendly ship on that position
+    subcase 3b:
+    player moves to a position within his range with an enemy ship on that position
+case 4:
+player moves to a position outside his range with another ship on that position
+    subcase 4a:
+    player moves to a position outside his x range with another friendly ship on that position
+    subcase 4b:
+    player moves to a position outside his y range with another friendly ship on that position
+    subcase 4c:
+    player moves to a position outside his x and y range with another friendly ship on that position
+    subcase 4d:
+    player moves to a position outside his x range with an enemy ship on that position
+    subcase 4e:
+    player moves to a position outside his y range with an enemy ship on that position
+    subcase 4f:
+    player moves to a position outside his x and y range with an enemy ship on that position
 
-
-          x
-
-
-8 8             12 8
-
-7 12, 13 12
-7 - 10 = -3 abs = 3 // true
-12 - 10 = 2 // true
+12 fucking cases
+jesus fucking christ
