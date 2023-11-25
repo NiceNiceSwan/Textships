@@ -69,13 +69,13 @@ void ship::print_detailed_ship_info()
     << "\nArmor penetration: " << armor_penetration
     << "\nGun range: " << gun_range
     << "\nFires every " << reload_time << " turns"
+    << "\nGuns reloaded in " << time_to_reload << " turns"
     << "\nAccuracy:" << accuracy << "%"
-    << "\nChance to hit maneuvering target" << dodging_target_hit_chance
+    << "\nChance to hit maneuvering target: " << dodging_target_hit_chance
     << "\nCan move " << speed << " tiles in a single turn"
     << "\nCan still move " << moves_left_in_turn << " tiles in this turn"
     << "\nChance to dodge: " << dodge_chance
-    << "\nCurrent coordinates: " << position_x << "x " << position_y << "y"
-    << "\nCurrent destination: " << destination_x << "x " << destination_y << "y\n";
+    << "\nCurrent coordinates: " << position_x << "x " << position_y << "y\n";
 }
 
 void ship::print_short_ship_info()
