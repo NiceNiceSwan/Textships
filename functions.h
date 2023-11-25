@@ -25,6 +25,10 @@ void shot_handler(ship &attacking_ship, ship &targeted_ship, bool target_is_spot
 
 bool player_interface(int player, std::vector<ship> &current_player_fleet, std::vector<ship> &other_player_fleet);
 
+void order_ship_to_move(std::vector<ship> &player_fleet, std::vector<ship> other_fleet);
 
+void ship_next_position_handler(std::vector<ship> &current_fleet, int id_selected_ship, std::vector<ship> other_fleet);
+
+void ship_destination_clear(std::vector<ship> &current_fleet, int id_selected_ship, std::vector<ship> other_fleet, int &distance_x_to_destination, int &distance_y_to_destination);
 
 #endif

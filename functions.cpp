@@ -297,68 +297,82 @@ bool player_interface(int player, std::vector<ship> &current_player_fleet, std::
 // jeśli gracz 1 spróbuje przmieścić swój statek na pozycję 2x 2y, to statek zostanie cofnięty na pozycję 1x 1y, najlepiej refundując
 // jeden punkt ruchu statku (czyli zamiast zabrać 2, zabierze 1)
 // btw, zrozumiałem właśnie że NIE potrzebujemy algorytmu bresenhama
-void ship_movement_handler(std::vector<ship> &current_player_fleet, std::vector<ship> other_player_fleet)
+void order_ship_to_move(std::vector<ship> &player_fleet, std::vector<ship> other_fleet)
 {
-    // I will have to check not only for other ships of the same player, but also ships of the other player. 
-    // This makes me depressed
     std::cout << "Choose the ship with which you want to move:\n";
     int id_of_ship_being_moved;
     std::cin >> id_of_ship_being_moved;
     std::cout << "Input destination coordinates:\n"
     << "x: ";
-    std::cin >> current_player_fleet[id_of_ship_being_moved].destination_x;
+    std::cin >> player_fleet[id_of_ship_being_moved].destination_x;
     std::cout << "y: ";
-    std::cin >> current_player_fleet[id_of_ship_being_moved].destination_y;
+    std::cin >> player_fleet[id_of_ship_being_moved].destination_y;
+    // look ok i'm sorry I don't think there is a better way of doing this because of the insane amount
+    // of checks we need to make
+    // ship_next_position_handler(player_fleet[id_of_ship_being_moved]);
 }
 
-void ship_mover(std::vector<ship> &moving_player_fleet, int moving_ship_id, std::vector<ship> other_player_fleet)
+void ship_next_position_handler(std::vector<ship> &current_fleet, int id_selected_ship, std::vector<ship> other_fleet)
 {
-    int distance_x_to_destination = moving_player_fleet[moving_ship_id].destination_x - moving_player_fleet[moving_ship_id].position_x;
-    int distance_y_to_destination = moving_player_fleet[moving_ship_id].destination_y - moving_player_fleet[moving_ship_id].position_y;
-    if (std::max(std::abs(distance_x_to_destination),std::abs(distance_y_to_destination)) <= moving_player_fleet[moving_ship_id].moves_left_in_turn)
+    int distance_x_to_destination = current_fleet[id_selected_ship].destination_x - current_fleet[id_selected_ship].position_x;
+    int distance_y_to_destination = current_fleet[id_selected_ship].destination_y - current_fleet[id_selected_ship].position_y;
+    if (std::max(std::abs(distance_x_to_destination), std::abs(distance_y_to_destination)) <= current_fleet[id_selected_ship].moves_left_in_turn)
     {
-        // I'm using those comments to mark the end of one argument and the start of another, 
-        // because they are more easily visible than a comma. I did it here but I may not do it elsewhere
-        if (ship_finder_at_coordinates(moving_player_fleet,/* */moving_player_fleet[moving_ship_id].destination_x,/* */moving_player_fleet[moving_ship_id].destination_y))
+        ship_destination_clear(current_fleet, id_selected_ship, other_fleet, distance_x_to_destination, distance_y_to_destination);
+        current_fleet[id_selected_ship].position_x += distance_x_to_destination;
+        current_fleet[id_selected_ship].position_y += distance_y_to_destination;
+        current_fleet[id_selected_ship].moves_left_in_turn -= std::max(std::abs(distance_x_to_destination), std::abs(distance_y_to_destination));
+        return;
+    }
+    if (std::abs(distance_x_to_destination) > current_fleet[id_selected_ship].moves_left_in_turn)
+    {
+        if (distance_x_to_destination > 0)
         {
-            std::cout << "This position is already occupied by one of your ships, please try again\n";
-            return;
+            current_fleet[id_selected_ship].destination_x = current_fleet[id_selected_ship].position_x + current_fleet[id_selected_ship].moves_left_in_turn;
         }
-        moving_player_fleet[moving_ship_id].position_x = moving_player_fleet[moving_ship_id].destination_x;
-        moving_player_fleet[moving_ship_id].position_y = moving_player_fleet[moving_ship_id].destination_y;
-        moving_player_fleet[moving_ship_id].moves_left_in_turn -= std::max(std::abs(distance_x_to_destination),std::abs(distance_y_to_destination));
-        return;
+        else if (distance_x_to_destination < 0)
+        {
+            current_fleet[id_selected_ship].destination_x = current_fleet[id_selected_ship].position_x - current_fleet[id_selected_ship].moves_left_in_turn;
+        }
     }
-
-    // TODO: move this stuff below into a new function, it's too much code and it's so repetetive we might as well
-
-    // in this bit of code we're using destination_x/y to check whether the position is valid before moving there,
-    // making sure the actual position of the ship is unaffected
-    if (std::abs(distance_x_to_destination) > moving_player_fleet[moving_ship_id].moves_left_in_turn)
+    if (std::abs(distance_y_to_destination) > current_fleet[id_selected_ship].moves_left_in_turn)
     {
-        moving_player_fleet[moving_ship_id].destination_x = moving_player_fleet[moving_ship_id].position_x;
-        moving_player_fleet[moving_ship_id].destination_x += moving_player_fleet[moving_ship_id].moves_left_in_turn * (-1 * std::signbit(distance_x_to_destination));
-        moving_player_fleet[moving_ship_id].destination_x += moving_player_fleet[moving_ship_id].moves_left_in_turn * !std::signbit(distance_x_to_destination);
-    }
-
-    if (std::abs(distance_y_to_destination) > moving_player_fleet[moving_ship_id].moves_left_in_turn)
-    {
-        moving_player_fleet[moving_ship_id].destination_y = moving_player_fleet[moving_ship_id].position_y;
-        // depending on whether distance_y_to_destination is positive or negative, will either add or subtract from destination_y
-        moving_player_fleet[moving_ship_id].destination_y += moving_player_fleet[moving_ship_id].moves_left_in_turn * (-1 * std::signbit(distance_y_to_destination));
-        moving_player_fleet[moving_ship_id].destination_y += moving_player_fleet[moving_ship_id].moves_left_in_turn * !std::signbit(distance_y_to_destination);
-    }
-
-    if (ship_finder_at_coordinates(moving_player_fleet,/* */moving_player_fleet[moving_ship_id].destination_x,/* */moving_player_fleet[moving_ship_id].destination_y))
-    {
-        moving_player_fleet[moving_ship_id].destination_x = moving_player_fleet[moving_ship_id].position_x;
-        moving_player_fleet[moving_ship_id].destination_y = moving_player_fleet[moving_ship_id].position_y;
-        std::cout << "This position is already occupied by one of your ships, please try again\n";
-        return;
-    }
-
-    moving_player_fleet[moving_ship_id].position_x = moving_player_fleet[moving_ship_id].destination_x;
-    moving_player_fleet[moving_ship_id].position_y = moving_player_fleet[moving_ship_id].destination_y;
-    moving_player_fleet[moving_ship_id].moves_left_in_turn = 0;
+        if (distance_y_to_destination > 0)
+        {
+            current_fleet[id_selected_ship].destination_y = current_fleet[id_selected_ship].position_y + current_fleet[id_selected_ship].moves_left_in_turn;
+        }
+        else if (distance_y_to_destination < 0)
+        {
+            current_fleet[id_selected_ship].destination_y = current_fleet[id_selected_ship].position_y - current_fleet[id_selected_ship].moves_left_in_turn;
+        }      
+    }  
+    ship_destination_clear(current_fleet, id_selected_ship, other_fleet, distance_x_to_destination, distance_y_to_destination);
+    current_fleet[id_selected_ship].position_x += distance_x_to_destination;
+    current_fleet[id_selected_ship].position_y += distance_y_to_destination;
+    current_fleet[id_selected_ship].moves_left_in_turn -= std::max(std::abs(distance_x_to_destination), std::abs(distance_y_to_destination));
+    return;
+    
 }
 
+void ship_destination_clear(std::vector<ship> &current_fleet, int id_selected_ship, std::vector<ship> other_fleet, int &distance_x_to_destination, int &distance_y_to_destination)
+{
+    while (ship_finder_at_coordinates(current_fleet, current_fleet[id_selected_ship].destination_x, current_fleet[id_selected_ship].destination_y) || ship_finder_at_coordinates(other_fleet, current_fleet[id_selected_ship].destination_x, current_fleet[id_selected_ship].destination_y))
+    {
+        if (distance_x_to_destination > 0)
+        {
+            distance_x_to_destination--;
+        }
+        else if (distance_x_to_destination < 0)
+        {
+            distance_x_to_destination++;
+        }
+        if (distance_y_to_destination > 0)
+        {
+            distance_y_to_destination--;
+        }
+        else if (distance_y_to_destination)
+        {
+            distance_y_to_destination++;
+        }
+    }
+}
