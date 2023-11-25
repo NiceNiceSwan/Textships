@@ -385,18 +385,22 @@ void ship_destination_clear(std::vector<ship> &current_fleet, int id_selected_sh
         if (distance_x_to_destination > 0)
         {
             distance_x_to_destination--;
+            current_fleet[id_selected_ship].destination_x = current_fleet[id_selected_ship].position_x + distance_x_to_destination;
         }
         else if (distance_x_to_destination < 0)
         {
             distance_x_to_destination++;
+            current_fleet[id_selected_ship].destination_x = current_fleet[id_selected_ship].position_x + distance_x_to_destination;
         }
         if (distance_y_to_destination > 0)
         {
             distance_y_to_destination--;
+            current_fleet[id_selected_ship].destination_y = current_fleet[id_selected_ship].position_y + distance_y_to_destination;
         }
         else if (distance_y_to_destination)
         {
             distance_y_to_destination++;
+            current_fleet[id_selected_ship].destination_y = current_fleet[id_selected_ship].position_y + distance_y_to_destination;
         }
     }
 }
