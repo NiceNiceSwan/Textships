@@ -94,12 +94,6 @@ void ship_spoting_handler(std::vector<ship> fleet_that_spots, std::vector<ship> 
 
 void ship_spotter(ship ship_that_spots, ship ship_being_spotted, int id_of_spotted_ship, std::vector<bool> &spotted_ship_table)
 {
-    // FIXME: we have no way of stopping multiple ships from spotting the same target and printing that info out, meaning
-    // that right now 2 ships can spot one target and both can relay the same message. I personally think this is bad, but there
-    // are pluses coming from this, like a player knowing that multiple ships are spotting the same target, so he can move one away
-    // either to keep it safe or to spot over a larger area
-    // TODO: think about which solution is better, and if both are good enough,
-    // maybe even add a new entry in the player interface to display detailed spotting data
     int distance_x_between_ships = std::abs(ship_that_spots.position_x - ship_being_spotted.position_x);
     int distance_y_between_ships = std::abs(ship_that_spots.position_y - ship_being_spotted.position_y);
     if (distance_x_between_ships <= ship_being_spotted.certain_detection_range && distance_y_between_ships <= ship_being_spotted.certain_detection_range)
@@ -188,33 +182,31 @@ void fire_at_coordinates(std::vector<ship> &attacking_fleet, std::vector<ship> &
     int x;
     int y;
     int attacking_ship_id;
-    int distance_x;
-    int distance_y;
     bool ready_to_fire;
     // maybe I could put it in a separate function if I feel like this block of code is getting too long and unwieldy
-    // TODO: change this so that the ship ID input goes first, we could do a reload check first before moving
-    // on to inputing target coordinates
-    std::cout << "Input target coordinates:\n"
-    << "x: ";
-    x = get_int_input();
-    std::cout << "y: ";
-    y = get_int_input();
     // TODO: ability to call ships by their name and number rather than ID
     // std::cout << "Choose the ship you want to attack with: ";
     std::cout << "Input the ID of the ship you want to fire with: ";
     attacking_ship_id = get_int_input();
-    distance_x = std::abs(x - attacking_fleet[attacking_ship_id].position_x);
-    distance_y = std::abs(x - attacking_fleet[attacking_ship_id].position_y);
-    if (distance_x > attacking_fleet[attacking_ship_id].gun_range || distance_y > attacking_fleet[attacking_ship_id].gun_range)
-    {
-        std::cout << "Target out of range, aborting\n";
-        return;
-    }
     if (attacking_fleet[attacking_ship_id].time_to_reload > 0)
     {
         std::cout << "Ship has not reloaded it's guns yet, aborting\n";
         return;
     }
+
+    std::cout << "Input target coordinates:\n"
+    << "x: ";
+    x = get_int_input();
+    std::cout << "y: ";
+    y = get_int_input();
+    int distance_x = std::abs(x - attacking_fleet[attacking_ship_id].position_x);
+    int distance_y = std::abs(x - attacking_fleet[attacking_ship_id].position_y);
+    if (distance_x > attacking_fleet[attacking_ship_id].gun_range || distance_y > attacking_fleet[attacking_ship_id].gun_range)
+    {
+        std::cout << "Target out of range, aborting\n";
+        return;
+    }
+
     std::cout << "The ship is ready to fire, are you sure you want to fire? (0 - No, 1 - Yes): ";
     ready_to_fire = get_bool_input();
     // I could put this in a separate function too
@@ -306,15 +298,16 @@ bool main_action_selector(std::vector<ship> &current_player_fleet, std::vector<s
             current_player_fleet[ship_id_to_get_detailed_info].print_detailed_ship_info();
             return true;
             break;
+        // case 2:
+        //     // TODO: detailed spotting info
+        //     std::cout << "Detailed spotting info placeholder\n";
+        //     return true;
+        //     break;
         case 2:
-            std::cout << "Detailed spotting info placeholder\n";
-            return true;
-            break;
-        case 3:
             fire_at_coordinates(current_player_fleet, other_player_fleet, spotted_ships_id);
             return true;
             break;
-        case 4:
+        case 3:
             order_ship_to_move(current_player_fleet, other_player_fleet);
             return true;
             break;
@@ -478,3 +471,16 @@ void ship_killer(std::vector<ship> &fleet)
     }
     
 }
+
+// void print_detailed_spotting_info(std::vector<bool> spotted_ships_id, std::vector<ship> fleet)
+// {
+//     for (size_t i = 0; i < fleet.size(); i++)
+//     {
+//         if (spotted_ships_id[i])
+//         {
+            
+//         }
+        
+//     }
+    
+// }
