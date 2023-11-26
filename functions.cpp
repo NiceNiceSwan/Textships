@@ -275,9 +275,9 @@ bool main_action_selector(std::vector<ship> &current_player_fleet, std::vector<s
     std::cout << "\nChoose option: "
     << "\n(0) End turn"
     << "\n(1) Show detailed ship info"
-    << "\n(2) Show detailes spotting info"
-    << "\n(3) Fire at coordinates"
-    << "\n(4) Order ships to move\n";
+    // << "\n(2) Show detailes spotting info"
+    << "\n(2) Fire at coordinates"
+    << "\n(3) Order ships to move\n";
     int ship_id_to_get_detailed_info;
     bool end_turn_prompt;
     switch (get_int_input())
