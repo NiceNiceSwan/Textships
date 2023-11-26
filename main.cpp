@@ -4,11 +4,12 @@
 #include "classes.h"
 #include "functions.h"
 
+const int map_max_size_x = 50;
+const int map_max_size_y = 50;
+
 int main()
 {
     srand(time(NULL));
-    int map_max_size_x = 50;
-    int map_max_size_y = 50;
     std::vector<ship> fleet1 = {ship(0,1)};
     std::vector<ship> fleet2 = {ship(1,1),ship(2,1)};
     std::cout << "Player 1 configuration\n";

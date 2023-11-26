@@ -6,6 +6,8 @@
 #include <vector>
 #include <stdlib.h>
 #include <chrono>
+extern const int map_max_size_x;
+extern const int map_max_size_y;
 
 int get_int_input();
 
