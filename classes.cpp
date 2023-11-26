@@ -82,7 +82,7 @@ void ship::print_detailed_ship_info()
     << "\nGun range: " << gun_range
     << "\nFires every " << reload_time << " turns"
     << "\nGuns reloaded in " << time_to_reload << " turns"
-    << "\nAccuracy:" << accuracy << "%"
+    << "\nAccuracy: " << accuracy << "%"
     << "\nChance to hit maneuvering target: " << dodging_target_hit_chance
     << "\nCan move " << speed << " tiles in a single turn"
     << "\nCan still move " << moves_left_in_turn << " tiles in this turn"
