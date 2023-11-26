@@ -10,8 +10,8 @@ const int map_max_size_y = 50;
 int main()
 {
     srand(time(NULL));
-    std::vector<ship> fleet1 = {ship(0,1)};
-    std::vector<ship> fleet2 = {ship(1,1),ship(2,1)};
+    std::vector<ship> fleet1 = {ship(0,1), ship(0,2), ship(1,1), ship(1,2), ship(2,1)};
+    std::vector<ship> fleet2 = {ship(0,1), ship(0,2), ship(1,1), ship(1,2), ship(2,1)};
     std::cout << "Player 1 configuration\n";
     //TODO: define a spawning box so that we won't have to worry about the players spawning ships on top of another player's ship.
     // int *player_left_x_spawning_boundary = new int;
