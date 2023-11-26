@@ -36,7 +36,7 @@ void clear_screen_func()
     /* Move the cursor home */
     SetConsoleCursorPosition( hStdOut, homeCoords );
 }
-
+// this is a test
 int get_int_input()
 {
     int choice = 0;
