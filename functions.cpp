@@ -193,6 +193,12 @@ void fire_at_coordinates(std::vector<ship> &attacking_fleet, std::vector<ship> &
         std::cout << "Ship has not reloaded it's guns yet, aborting\n";
         return;
     }
+    if (attacking_ship_id > attacking_fleet.size())
+    {
+        std::cout << "No ship with such id, aborting\n";
+        return;
+    }
+    
 
     std::cout << "Input target coordinates:\n"
     << "x: ";
@@ -295,6 +301,12 @@ bool main_action_selector(std::vector<ship> &current_player_fleet, std::vector<s
         case 1:
             std::cout << "Input the ID of the ship you want to see\n";
             ship_id_to_get_detailed_info = get_int_input();
+            if (ship_id_to_get_detailed_info > current_player_fleet.size())
+            {
+                std::cout << "No ship with such ID\n";
+                return true;
+            }
+            
             current_player_fleet[ship_id_to_get_detailed_info].print_detailed_ship_info();
             return true;
             break;
@@ -341,11 +353,30 @@ void order_ship_to_move(std::vector<ship> &player_fleet, std::vector<ship> other
         std::cout << "This ship cannot move anymore in this turn\n";
         return;
     }
+    if (id_of_ship_being_moved > player_fleet.size())
+    {
+        std::cout << "No ship with such ID, aborting\n";
+        return;
+    }
+    
+
     std::cout << "Input destination coordinates:\n"
     << "x: ";
     player_fleet[id_of_ship_being_moved].destination_x = get_int_input();
+    if (player_fleet[id_of_ship_being_moved].destination_x > map_max_size_x || player_fleet[id_of_ship_being_moved].destination_x < 0)
+    {
+        std::cout << "Wrong destination, aborting\n";
+        return;
+    }
+    
     std::cout << "y: ";
     player_fleet[id_of_ship_being_moved].destination_y = get_int_input();
+    if (player_fleet[id_of_ship_being_moved].destination_y > map_max_size_y || player_fleet[id_of_ship_being_moved].destination_y < 0)
+    {
+        std::cout << "Wrong destination, aborting\n";
+        return;
+    }
+
     if (player_fleet[id_of_ship_being_moved].destination_x == player_fleet[id_of_ship_being_moved].position_x && player_fleet[id_of_ship_being_moved].destination_y == player_fleet[id_of_ship_being_moved].position_y)
     {
         return;
