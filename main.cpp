@@ -62,7 +62,5 @@ int main()
         }
         
         // TODO: some way to notify the players that their ships have been damaged/destroyed
-        // TODO: a function to handle all the things that happen after a turn ends for both players, 
-        // like removing dead ships, restoring movement points, forwarding the reload timer
     }
 }
