@@ -1,17 +1,30 @@
 #include "functions.h"
 
-int get_choice()
+int get_int_input()
 {
     int choice = 0;
     std::cin >> choice;
     while (std::cin.fail())
     {
-        std::cout << "Wrong input\n";
+        std::cout << "Wrong input, please input a number\n";
         std::cin.clear();
         std::cin.ignore(1000,'\n');
         std::cin>>choice;
     }
-    std::cout << "\n";
+    return choice;
+}
+
+bool get_bool_input()
+{
+    bool choice = 0;
+    std::cin >> choice;
+    while (std::cin.fail())
+    {
+        std::cout << "Wrong input, please input a number\n";
+        std::cin.clear();
+        std::cin.ignore(1000,'\n');
+        std::cin>>choice;
+    }
     return choice;
 }
 
@@ -46,18 +59,18 @@ void player_configuration(std::vector<ship> &ship, int max_x, int max_y)
         std::cout << ship[i].ship_class << "\n";
 
         std::cout << "Starting position x: ";
-        std::cin >> ship[i].position_x;
+        ship[i].position_x = get_int_input();
         std::cout << "Starting position y: ";
-        std::cin >> ship[i].position_y;
+        ship[i].position_y = get_int_input();
         while (!is_starting_position_valid(i, ship, max_x, max_y))
         {
             std::cin.clear();
             std::cin.ignore(1000,'\n');
             std::cout << "Invalid starting position, please try again\n";
             std::cout << "Starting position x: ";
-            std::cin >> ship[i].position_x;
+            ship[i].position_x = get_int_input();
             std::cout << "Starting position y: ";
-            std::cin >> ship[i].position_y;
+            ship[i].position_y = get_int_input();
         }
         ship[i].destination_x = ship[i].position_x;
         ship[i].destination_y = ship[i].position_y;
@@ -160,37 +173,31 @@ void fire_at_coordinates(std::vector<ship> &attacking_fleet, std::vector<ship> &
     int distance_y;
     bool ready_to_fire;
     // maybe I could put it in a separate function if I feel like this block of code is getting too long and unwieldy
-    do
+    // TODO: change this so that the ship ID input goes first, we could do a reload check first before moving
+    // on to inputing target coordinates
+    std::cout << "Input target coordinates:\n"
+    << "x: ";
+    x = get_int_input();
+    std::cout << "y: ";
+    y = get_int_input();
+    // std::cout << "Choose the ship you want to attack with: ";
+    std::cout << "Input the ID of the ship you want to fire with: ";
+    attacking_ship_id = get_int_input();
+    distance_x = std::abs(x - attacking_fleet[attacking_ship_id].position_x);
+    distance_y = std::abs(x - attacking_fleet[attacking_ship_id].position_y);
+    if (distance_x > attacking_fleet[attacking_ship_id].gun_range || distance_y > attacking_fleet[attacking_ship_id].gun_range)
     {
-        // TODO: change this so that the ship ID input goes first, we could do a reload check first before moving
-        // on to inputing target coordinates
-        std::cout << "Input target coordinates:\n"
-        << "x: ";
-        std::cin >> x;
-        std::cout << "y: ";
-        std::cin >> y;
-        std::cout << "Choose the ship you want to attack with: ";
-        std::cin >> attacking_ship_id;
-        distance_x = std::abs(x - attacking_fleet[attacking_ship_id].position_x);
-        distance_y = std::abs(x - attacking_fleet[attacking_ship_id].position_y);
-        if (distance_x > attacking_fleet[attacking_ship_id].gun_range || distance_y > attacking_fleet[attacking_ship_id].gun_range)
-        {
-            std::cout << "Target out of range, try again\n";
-            ready_to_fire = false;
-        }
-        else if (attacking_fleet[attacking_ship_id].time_to_reload > 0)
-        {
-            std::cout << "Ship has not reloaded it's guns yet, try again\n";
-            ready_to_fire = false;
-        }
-        else
-        {
-            ready_to_fire = true;
-        }
-    } while (!ready_to_fire);
+        std::cout << "Target out of range, aborting\n";
+        return;
+    }
+    else if (attacking_fleet[attacking_ship_id].time_to_reload > 0)
+    {
+        std::cout << "Ship has not reloaded it's guns yet, aborting\n";
+        return;
+    }
     // FIXME: we have no way of leaving the loop if no target is in range or no ship has it's guns reloaded
     std::cout << "The ship is ready to fire, are you sure you want to fire? (0 - No, 1 - Yes): ";
-    std::cin >> ready_to_fire;
+    ready_to_fire = get_bool_input();
     // I could put this in a separate function too
     int targeted_ship_id;
     if (ready_to_fire)
@@ -199,8 +206,7 @@ void fire_at_coordinates(std::vector<ship> &attacking_fleet, std::vector<ship> &
         if (ship_finder_at_coordinates(target_fleet, x, y, targeted_ship_id))
         {
             shot_handler(attacking_fleet[attacking_ship_id], target_fleet[targeted_ship_id], spotted_ships_id[targeted_ship_id]);
-            // TODO: all the stuff that happens when a ship's HP reaches 0
-            // also some way to notify the other player that his ship has been damaged / sunk
+            // TODO: some way to notify the other player that his ship has been damaged / sunk
         }
         else
         {
@@ -261,7 +267,7 @@ bool main_action_selector(std::vector<ship> &current_player_fleet, std::vector<s
     << "\n(3) Order ships to move\n";
     int ship_id_to_get_detailed_info;
     bool end_turn_prompt;
-    switch (get_choice())
+    switch (get_int_input())
         {
         case 0:
             std::cout << "Are you sure you want to end your turn?\n"
@@ -275,7 +281,7 @@ bool main_action_selector(std::vector<ship> &current_player_fleet, std::vector<s
             break;
         case 1:
             std::cout << "Input the ID of the ship you want to see\n";
-            std::cin >> ship_id_to_get_detailed_info;
+            ship_id_to_get_detailed_info = get_int_input();
             current_player_fleet[ship_id_to_get_detailed_info].print_detailed_ship_info();
             return true;
             break;
@@ -307,9 +313,9 @@ bool main_action_selector(std::vector<ship> &current_player_fleet, std::vector<s
 // I never want to have anything to do with coordinates ever again
 void order_ship_to_move(std::vector<ship> &player_fleet, std::vector<ship> other_fleet)
 {
-    std::cout << "Choose the ship with which you want to move:\n";
-    int id_of_ship_being_moved;
-    std::cin >> id_of_ship_being_moved;
+    // std::cout << "Choose the ship with which you want to move:\n";
+    std::cout << "Input the ID of the ship you want to move:\n";
+    int id_of_ship_being_moved = get_int_input();
     if (player_fleet[id_of_ship_being_moved].moves_left_in_turn <= 0)
     {
         // std::cout << "This shit cannot move anymore in this turn\n"; -- this was a missclick, but it's so funny
@@ -319,9 +325,9 @@ void order_ship_to_move(std::vector<ship> &player_fleet, std::vector<ship> other
     }
     std::cout << "Input destination coordinates:\n"
     << "x: ";
-    std::cin >> player_fleet[id_of_ship_being_moved].destination_x;
+    player_fleet[id_of_ship_being_moved].destination_x = get_int_input();
     std::cout << "y: ";
-    std::cin >> player_fleet[id_of_ship_being_moved].destination_y;
+    player_fleet[id_of_ship_being_moved].destination_y = get_int_input();
     if (player_fleet[id_of_ship_being_moved].destination_x == player_fleet[id_of_ship_being_moved].position_x && player_fleet[id_of_ship_being_moved].destination_y == player_fleet[id_of_ship_being_moved].position_y)
     {
         return;

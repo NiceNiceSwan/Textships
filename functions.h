@@ -7,7 +7,9 @@
 #include <stdlib.h>
 #include <chrono>
 
-int get_choice();
+int get_int_input();
+
+bool get_bool_input();
 
 bool is_starting_position_valid(int ship_id, std::vector<ship> ship, int max_x, int max_y);
 
