@@ -9,7 +9,7 @@ void ship::battleship(int num)
     certain_detection_range = 5;
     uncertain_detection_range = certain_detection_range + 1;
     accuracy = 80;
-    dodging_target_hit_chance = 35;
+    dodging_target_hit_chance = 20;
     reload_time = 5;
     time_to_reload = 0;
     firepower = 20;
@@ -29,7 +29,7 @@ void ship::cruiser(int num)
     certain_detection_range = 4;
     uncertain_detection_range = certain_detection_range + 1;
     accuracy = 90;
-    dodging_target_hit_chance = 80;
+    dodging_target_hit_chance = 60;
     reload_time = 2;
     time_to_reload = 0;
     firepower = 15;
@@ -52,12 +52,12 @@ void ship::destroyer(int num)
     dodging_target_hit_chance = 90;
     reload_time = 2;
     time_to_reload = 0;
-    firepower = 6;
-    armor_penetration = 2;
+    firepower = 9;
+    armor_penetration = 5;
     gun_range = 3;
     speed = 4;
     moves_left_in_turn = speed;
-    dodge_chance = 50;
+    dodge_chance = 80;
     cost = 50;
 }
 
