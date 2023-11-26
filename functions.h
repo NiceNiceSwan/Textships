@@ -6,6 +6,7 @@
 #include <vector>
 #include <stdlib.h>
 #include <chrono>
+#include <windows.h>
 extern const int map_max_size_x;
 extern const int map_max_size_y;
 

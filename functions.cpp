@@ -94,33 +94,59 @@ void ship_spoting_handler(std::vector<ship> fleet_that_spots, std::vector<ship> 
 
 void ship_spotter(ship ship_that_spots, ship ship_being_spotted, int id_of_spotted_ship, std::vector<bool> &spotted_ship_table)
 {
+    HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
     int distance_x_between_ships = std::abs(ship_that_spots.position_x - ship_being_spotted.position_x);
     int distance_y_between_ships = std::abs(ship_that_spots.position_y - ship_being_spotted.position_y);
     if (distance_x_between_ships <= ship_being_spotted.certain_detection_range && distance_y_between_ships <= ship_being_spotted.certain_detection_range)
     {
+        // "This is terrible, but VGUI has forced my hand"
         spotted_ship_table[id_of_spotted_ship] = true;
-        std::cout << "\n" << ship_that_spots.ship_class
-        << " is spotting " << ship_being_spotted.ship_class
-        << ". " << ship_being_spotted.ship_class << " position is:\n"
+        SetConsoleTextAttribute(h, 10);
+        std::cout << "\n" << ship_that_spots.ship_class;
+        SetConsoleTextAttribute(h,7);
+        std::cout << " is spotting ";
+        SetConsoleTextAttribute(h,12);
+        std::cout << ship_being_spotted.ship_class;
+        SetConsoleTextAttribute(h,7);
+        std::cout << ". ";
+        SetConsoleTextAttribute(h,10);
+        std::cout << ship_being_spotted.ship_class;
+        SetConsoleTextAttribute(h,7);
+        std::cout << " position is:\n"
         << ship_being_spotted.position_x << "x\n"
         << ship_being_spotted.position_y << "y\n";
         if (distance_x_between_ships <= ship_that_spots.certain_detection_range && distance_y_between_ships <= ship_that_spots.certain_detection_range)
         {
-            std::cout << "Because of how close we are, "
-            << ship_that_spots.ship_class << " was spotted as well\n";
+            std::cout << "Because of how close we are, ";
+            SetConsoleTextAttribute(h,10);
+            std::cout << ship_that_spots.ship_class;
+            SetConsoleTextAttribute(h,7);
+            std::cout << " was spotted as well\n";
         }
         else if (distance_x_between_ships <= ship_that_spots.uncertain_detection_range && distance_y_between_ships <= ship_that_spots.uncertain_detection_range)
         {
-            std::cout << "Because of how close we are, "
-            << ship_that_spots.ship_class << " may have been spotted as well\n";
+            std::cout << "Because of how close we are, ";
+            SetConsoleTextAttribute(h,10);
+            std::cout << ship_that_spots.ship_class;
+            SetConsoleTextAttribute(h,7);
+            std::cout << " may have been spotted as well\n";
         }   
     }
     else if (distance_x_between_ships <= ship_being_spotted.uncertain_detection_range && distance_y_between_ships <= ship_being_spotted.uncertain_detection_range && rand()%100 + 1 > 65)
     {
         spotted_ship_table[id_of_spotted_ship] = true;
-        std::cout << "\n" << ship_that_spots.ship_class
-        << " has managed to spot " << ship_being_spotted.ship_class << ". "
-        << ship_being_spotted.ship_class << " position is:\n"
+        SetConsoleTextAttribute(h, 10);
+        std::cout << "\n" << ship_that_spots.ship_class;
+        SetConsoleTextAttribute(h, 7);
+        std::cout << " has managed to spot ";
+        SetConsoleTextAttribute(h,12);
+        std::cout << ship_being_spotted.ship_class;
+        SetConsoleTextAttribute(h,7);
+        std::cout << ". ";
+        SetConsoleTextAttribute(h,12);
+        std::cout << ship_being_spotted.ship_class;
+        SetConsoleTextAttribute(h,7);
+        std::cout << " position is:\n"
         << ship_being_spotted.position_x << "x\n"
         << ship_being_spotted.position_y << "y\n";
         if (distance_x_between_ships <= ship_that_spots.certain_detection_range && distance_y_between_ships <= ship_that_spots.certain_detection_range)
