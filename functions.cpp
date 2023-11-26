@@ -77,50 +77,69 @@ void player_configuration(std::vector<ship> &ship, int max_x, int max_y)
     }
 }
 
-void ship_spotter(std::vector<ship> fleet_that_spots, std::vector<ship> fleet_being_spotted, std::vector<bool> &spotted_ship_table)
+void ship_spoting_handler(std::vector<ship> fleet_that_spots, std::vector<ship> fleet_being_spotted, std::vector<bool> &spotted_ship_table)
 {
-    int distance_x_between_ships;
-    int distance_y_between_ships;
     for (size_t i = 0; i < fleet_that_spots.size(); i++)
     {
         for (size_t j = 0; j < fleet_being_spotted.size(); j++)
         {
-            // TODO: implement a detection probability when the ship is outside the certain detection range, but inside the uncertain detection range
-            // a simple rand() generated number, if the number is above/below x the ship is spotted/not spotted
-            distance_x_between_ships = std::abs(fleet_that_spots[i].position_x - fleet_being_spotted[j].position_x);
-            distance_y_between_ships = std::abs(fleet_that_spots[i].position_y - fleet_being_spotted[j].position_y);
-            if (distance_x_between_ships <= fleet_being_spotted[j].certain_detection_range && distance_y_between_ships <= fleet_being_spotted[j].certain_detection_range)
+            if (spotted_ship_table[j])
             {
-                // FIXME: we have no way of stopping multiple ships from spotting the same target and printing that info out, meaning
-                // that right now 2 ships can spot one target and both can relay the same message. I personally think this is bad, but there
-                // are pluses coming from this, like a player knowing that multiple ships are spotting the same target, so he can move one away
-                // either to keep it safe or to spot over a larger area
-                // TODO: think about which solution is better, and if both are good enough,
-                // maybe even add a new entry in the player interface to display detailed spotting data
-                spotted_ship_table[j] = true;
-                std::cout << "\n" <<fleet_that_spots[i].ship_class
-                << " is spotting " << fleet_being_spotted[j].ship_class
-                << ". " << fleet_being_spotted[j].ship_class << " position is:\n"
-                << fleet_being_spotted[j].position_x << "x\n"
-                << fleet_being_spotted[j].position_y << "y\n";
-                if (distance_x_between_ships <= fleet_that_spots[i].certain_detection_range && distance_y_between_ships <= fleet_that_spots[i].certain_detection_range)
-                {
-                    std::cout << "Because of how close we are, "
-                    << fleet_that_spots[i].ship_class << " was spotted as well\n";
-                }
-                else if (distance_x_between_ships <= fleet_that_spots[i].uncertain_detection_range && distance_y_between_ships <= fleet_that_spots[i].uncertain_detection_range)
-                {
-                    std::cout << "Because of how close we are, "
-                    << fleet_that_spots[i].ship_class << " may have been spotted as well\n";
-                }
-                
-                
+                continue;
             }
-            
-        }
-        
+            ship_spotter(fleet_that_spots[i], fleet_being_spotted[j], j, spotted_ship_table);
+        }   
     }
-    
+}
+
+void ship_spotter(ship ship_that_spots, ship ship_being_spotted, int id_of_spotted_ship, std::vector<bool> &spotted_ship_table)
+{
+    // FIXME: we have no way of stopping multiple ships from spotting the same target and printing that info out, meaning
+    // that right now 2 ships can spot one target and both can relay the same message. I personally think this is bad, but there
+    // are pluses coming from this, like a player knowing that multiple ships are spotting the same target, so he can move one away
+    // either to keep it safe or to spot over a larger area
+    // TODO: think about which solution is better, and if both are good enough,
+    // maybe even add a new entry in the player interface to display detailed spotting data
+    int distance_x_between_ships = std::abs(ship_that_spots.position_x - ship_being_spotted.position_x);
+    int distance_y_between_ships = std::abs(ship_that_spots.position_y - ship_being_spotted.position_y);
+    if (distance_x_between_ships <= ship_being_spotted.certain_detection_range && distance_y_between_ships <= ship_being_spotted.certain_detection_range)
+    {
+        spotted_ship_table[id_of_spotted_ship] = true;
+        std::cout << "\n" << ship_that_spots.ship_class
+        << " is spotting " << ship_being_spotted.ship_class
+        << ". " << ship_being_spotted.ship_class << " position is:\n"
+        << ship_being_spotted.position_x << "x\n"
+        << ship_being_spotted.position_y << "y\n";
+        if (distance_x_between_ships <= ship_that_spots.certain_detection_range && distance_y_between_ships <= ship_that_spots.certain_detection_range)
+        {
+            std::cout << "Because of how close we are, "
+            << ship_that_spots.ship_class << " was spotted as well\n";
+        }
+        else if (distance_x_between_ships <= ship_that_spots.uncertain_detection_range && distance_y_between_ships <= ship_that_spots.uncertain_detection_range)
+        {
+            std::cout << "Because of how close we are, "
+            << ship_that_spots.ship_class << " may have been spotted as well\n";
+        }   
+    }
+    else if (distance_x_between_ships <= ship_being_spotted.uncertain_detection_range && distance_y_between_ships <= ship_being_spotted.uncertain_detection_range && rand()%100 + 1 > 65)
+    {
+        spotted_ship_table[id_of_spotted_ship] = true;
+        std::cout << "\n" << ship_that_spots.ship_class
+        << " has managed to spot " << ship_being_spotted.ship_class << ". "
+        << ship_being_spotted.ship_class << " position is:\n"
+        << ship_being_spotted.position_x << "x\n"
+        << ship_being_spotted.position_y << "y\n";
+        if (distance_x_between_ships <= ship_that_spots.certain_detection_range && distance_y_between_ships <= ship_that_spots.certain_detection_range)
+        {
+            std::cout << "Because of how close we are, "
+            << ship_that_spots.ship_class << " was spotted as well\n";
+        }
+        else if (distance_x_between_ships <= ship_that_spots.uncertain_detection_range && distance_y_between_ships <= ship_that_spots.uncertain_detection_range)
+        {
+            std::cout << "Because of how close we are, "
+            << ship_that_spots.ship_class << " may have been spotted as well\n";
+        }  
+    }
 }
 
 bool ship_finder_at_coordinates(std::vector<ship> fleet_to_search, int x, int y, int &ship_id)
@@ -180,6 +199,7 @@ void fire_at_coordinates(std::vector<ship> &attacking_fleet, std::vector<ship> &
     x = get_int_input();
     std::cout << "y: ";
     y = get_int_input();
+    // TODO: ability to call ships by their name and number rather than ID
     // std::cout << "Choose the ship you want to attack with: ";
     std::cout << "Input the ID of the ship you want to fire with: ";
     attacking_ship_id = get_int_input();
@@ -190,12 +210,11 @@ void fire_at_coordinates(std::vector<ship> &attacking_fleet, std::vector<ship> &
         std::cout << "Target out of range, aborting\n";
         return;
     }
-    else if (attacking_fleet[attacking_ship_id].time_to_reload > 0)
+    if (attacking_fleet[attacking_ship_id].time_to_reload > 0)
     {
         std::cout << "Ship has not reloaded it's guns yet, aborting\n";
         return;
     }
-    // FIXME: we have no way of leaving the loop if no target is in range or no ship has it's guns reloaded
     std::cout << "The ship is ready to fire, are you sure you want to fire? (0 - No, 1 - Yes): ";
     ready_to_fire = get_bool_input();
     // I could put this in a separate function too
@@ -251,9 +270,10 @@ void player_interface(int player, std::vector<ship> &current_player_fleet, std::
     }
     std::cout << "\n\nDetected enemy ships:\n"; 
     std::vector<bool> spotted_ships_id(other_player_fleet.size(), false);
-    ship_spotter(current_player_fleet, other_player_fleet, spotted_ships_id);
+    ship_spoting_handler(current_player_fleet, other_player_fleet, spotted_ships_id);
     while (main_action_selector(current_player_fleet, other_player_fleet, spotted_ships_id))
     {
+        ship_spoting_handler(current_player_fleet, other_player_fleet, spotted_ships_id);
     }
     
 }
@@ -263,8 +283,9 @@ bool main_action_selector(std::vector<ship> &current_player_fleet, std::vector<s
     std::cout << "\nChoose option: "
     << "\n(0) End turn"
     << "\n(1) Show detailed ship info"
-    << "\n(2) Fire at coordinates"
-    << "\n(3) Order ships to move\n";
+    << "\n(2) Show detailes spotting info"
+    << "\n(3) Fire at coordinates"
+    << "\n(4) Order ships to move\n";
     int ship_id_to_get_detailed_info;
     bool end_turn_prompt;
     switch (get_int_input())
@@ -286,20 +307,24 @@ bool main_action_selector(std::vector<ship> &current_player_fleet, std::vector<s
             return true;
             break;
         case 2:
-            fire_at_coordinates(current_player_fleet, other_player_fleet, spotted_ships_id);
+            std::cout << "Detailed spotting info placeholder\n";
             return true;
             break;
         case 3:
+            fire_at_coordinates(current_player_fleet, other_player_fleet, spotted_ships_id);
+            return true;
+            break;
+        case 4:
             order_ship_to_move(current_player_fleet, other_player_fleet);
             return true;
             break;
         default:
+            std::cout << "Wrong input\n";
             return true;
             break;
         }
 }
 
-// TODO: all of this stuff below
 // Ten kod ma za zadanie sprawdzać pozycję wszystkich statków na mapie, brać od gracza ID statku który chce przemieścić,
 // koordynaty do których chce go przemieścić, sprawdzić czy te koordynaty są w zasięgu ruchu tego statku w jednej turze (prędkości)
 // i zależnie od tego przemieścić statek do jakiegoś pola

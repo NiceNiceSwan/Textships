@@ -15,7 +15,9 @@ bool is_starting_position_valid(int ship_id, std::vector<ship> ship, int max_x, 
 
 void player_configuration(std::vector<ship> &ship, int max_x, int max_y);
 
-void ship_spotter(std::vector<ship> fleet_that_spots, std::vector<ship> fleet_being_spotted, std::vector<bool> &spotted_ship_table);
+void ship_spoting_handler(std::vector<ship> fleet_that_spots, std::vector<ship> fleet_being_spotted, std::vector<bool> &spotted_ship_table);
+
+void ship_spotter(ship ship_that_spots, ship ship_being_spotted, int id_of_spotted_ship, std::vector<bool> &spotted_ship_table);
 
 bool ship_finder_at_coordinates(std::vector<ship> fleet_to_search, int x, int y, int &ship_id);
 
