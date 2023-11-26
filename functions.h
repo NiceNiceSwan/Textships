@@ -10,6 +10,8 @@
 extern const int map_max_size_x;
 extern const int map_max_size_y;
 
+void clear_screen_func();
+
 int get_int_input();
 
 bool get_bool_input();
