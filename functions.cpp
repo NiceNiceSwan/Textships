@@ -165,15 +165,31 @@ bool ship_finder_at_coordinates(std::vector<ship> fleet_to_search, int x, int y)
 
 int hit_calculator(ship &attacking_ship, ship &targeted_ship)
 {
-    if (targeted_ship.armor == 0)
+    int damage_dealt;
+    if (attacking_ship.armor_penetration == 0)
     {
-        targeted_ship.hp -= attacking_ship.firepower;
-        return attacking_ship.firepower;
+        damage_dealt = attacking_ship.firepower - targeted_ship.armor;
+        if (damage_dealt < 0)
+        {
+            damage_dealt = 0;
+            return damage_dealt;
+        }
+        
+        targeted_ship.hp -= damage_dealt;
+        return damage_dealt;
     }
     else
     {
-        targeted_ship.hp -= attacking_ship.firepower * ((float)attacking_ship.armor_penetration / targeted_ship.armor);
-        return attacking_ship.firepower * ((float)attacking_ship.armor_penetration / targeted_ship.armor);
+        // TODO: rewrite this, right now having no armor is more beneficial than having little armor
+        damage_dealt = attacking_ship.firepower - ((float)targeted_ship.armor / attacking_ship.armor_penetration);
+        if (damage_dealt < 0)
+        {
+            damage_dealt = 0;
+            return damage_dealt;
+        }
+        
+        targeted_ship.hp -= damage_dealt;
+        return damage_dealt;
     }
 }
 
@@ -206,7 +222,7 @@ void fire_at_coordinates(std::vector<ship> &attacking_fleet, std::vector<ship> &
     std::cout << "y: ";
     y = get_int_input();
     int distance_x = std::abs(x - attacking_fleet[attacking_ship_id].position_x);
-    int distance_y = std::abs(x - attacking_fleet[attacking_ship_id].position_y);
+    int distance_y = std::abs(y - attacking_fleet[attacking_ship_id].position_y);
     if (distance_x > attacking_fleet[attacking_ship_id].gun_range || distance_y > attacking_fleet[attacking_ship_id].gun_range)
     {
         std::cout << "Target out of range, aborting\n";
