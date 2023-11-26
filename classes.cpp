@@ -15,7 +15,7 @@ void ship::battleship(int num)
     firepower = 20;
     armor_penetration = 20;
     gun_range = 7;
-    speed = 2;
+    speed = 5;
     moves_left_in_turn = speed;
     dodge_chance = 0;
     cost = 100;
@@ -35,7 +35,7 @@ void ship::cruiser(int num)
     firepower = 15;
     armor_penetration = 8;
     gun_range = 5;
-    speed = 3;
+    speed = 6;
     moves_left_in_turn = speed;
     dodge_chance = 25;
     cost = 70;
@@ -44,8 +44,8 @@ void ship::cruiser(int num)
 void ship::destroyer(int num)
 {
     ship_class = "Destroyer " + std::to_string(num);
-    hp = 15;
-    armor = 0;
+    hp = 20;
+    armor = 4;
     certain_detection_range = 2;
     uncertain_detection_range = certain_detection_range + 1;
     accuracy = 80;
@@ -55,7 +55,7 @@ void ship::destroyer(int num)
     firepower = 9;
     armor_penetration = 5;
     gun_range = 3;
-    speed = 4;
+    speed = 7;
     moves_left_in_turn = speed;
     dodge_chance = 80;
     cost = 50;
@@ -63,7 +63,8 @@ void ship::destroyer(int num)
 
 void ship::print_detailed_ship_info()
 {
-    std::cout << "HP remaining: " << hp 
+    std::cout << "Ship name: " << ship_class 
+    << "HP remaining: " << hp 
     << "\nArmor: " << armor
     << "\nFirepower: " << firepower
     << "\nArmor penetration: " << armor_penetration
