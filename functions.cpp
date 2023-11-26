@@ -65,52 +65,50 @@ bool get_bool_input()
     return choice;
 }
 
-bool is_starting_position_valid(int ship_id, std::vector<ship> ship, int max_x, int max_y)
+bool is_starting_position_valid(int ship_id, std::vector<ship> fleet, int min_x, int max_x, int min_y, int max_y)
 {
-    if (ship[ship_id].position_x < 0 || ship[ship_id].position_x > max_x || ship[ship_id].position_y < 0 || ship[ship_id].position_y > max_y)
+    if (fleet[ship_id].position_x < min_x || fleet[ship_id].position_x > max_x || fleet[ship_id].position_y < min_y || fleet[ship_id].position_y > max_y)
     {
+        std::cout << "Invalid ship position, try again\n";
         return false;
     }
-    for (size_t i = 0; i < ship.size(); i++)
+    for (size_t i = 0; i < fleet.size(); i++)
     {
-        if (i==ship_id)
+        if (i == ship_id)
         {
             continue;
         }
-        if (ship[i].position_x == ship[ship_id].position_x && ship[i].position_y == ship[ship_id].position_y)
+        if (fleet[ship_id].position_x == fleet[i].position_x && fleet[ship_id].position_y == fleet[i].position_y)
         {
+            std::cout << "Invalid ship position, try again\n";
             return false;
         }
-        
     }
-
     return true;
 }
 
-void player_configuration(std::vector<ship> &ship, int max_x, int max_y)
+void starting_setup(std::vector<ship> &player_fleet, int player_num, int low_x_boundary, int high_x_boundary, int low_y_boundary, int high_y_boundary)
 {
-    std::cout << "Map size: " << max_x << "x by " << max_y << "y\n";
-    std::cout << "Configure the starting positions of your ships:\n";
-    for (size_t i = 0; i < ship.size(); i++)
-    {
-        std::cout << ship[i].ship_class << "\n";
+    clear_screen_func();
+    std::cout << "Player " << player_num << " configuration\n";
+    player_configuration(player_fleet, low_x_boundary, high_x_boundary, low_y_boundary, high_y_boundary);
+    clear_screen_func();
+}
 
-        std::cout << "Starting position x: ";
-        ship[i].position_x = get_int_input();
-        std::cout << "Starting position y: ";
-        ship[i].position_y = get_int_input();
-        while (!is_starting_position_valid(i, ship, max_x, max_y))
+void player_configuration(std::vector<ship> &fleet, int min_x, int max_x, int min_y, int max_y)
+{
+    std::cout << "Your spawning boundaries are from " << min_x << "x to " << max_x << "x and from " << min_y << "y to " << max_y << "y\n";
+    std::cout << "Configure the starting positions of your ships:\n";
+    for (size_t i = 0; i < fleet.size(); i++)
+    {
+        std::cout << fleet[i].ship_class << "\n";
+        do
         {
-            std::cin.clear();
-            std::cin.ignore(1000,'\n');
-            std::cout << "Invalid starting position, please try again\n";
             std::cout << "Starting position x: ";
-            ship[i].position_x = get_int_input();
+            fleet[i].position_x = get_int_input();
             std::cout << "Starting position y: ";
-            ship[i].position_y = get_int_input();
-        }
-        ship[i].destination_x = ship[i].position_x;
-        ship[i].destination_y = ship[i].position_y;
+            fleet[i].position_y = get_int_input();
+        } while (!is_starting_position_valid(i, fleet, min_x, max_x, min_y, max_y));
     }
 }
 
