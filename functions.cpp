@@ -180,7 +180,6 @@ int hit_calculator(ship &attacking_ship, ship &targeted_ship)
     }
     else
     {
-        // TODO: rewrite this, right now having no armor is more beneficial than having little armor
         damage_dealt = attacking_ship.firepower - ((float)targeted_ship.armor / attacking_ship.armor_penetration);
         if (damage_dealt < 0)
         {
@@ -202,7 +201,7 @@ void fire_at_coordinates(std::vector<ship> &attacking_fleet, std::vector<ship> &
     // maybe I could put it in a separate function if I feel like this block of code is getting too long and unwieldy
     // TODO: ability to call ships by their name and number rather than ID
     // std::cout << "Choose the ship you want to attack with: ";
-    std::cout << "Input the ID of the ship you want to fire with: ";
+    std::cout << "\nInput the ID of the ship you want to fire with: ";
     attacking_ship_id = get_int_input();
     if (attacking_fleet[attacking_ship_id].time_to_reload > 0)
     {
@@ -305,7 +304,7 @@ bool main_action_selector(std::vector<ship> &current_player_fleet, std::vector<s
     switch (get_int_input())
         {
         case 0:
-            std::cout << "Are you sure you want to end your turn?\n"
+            std::cout << "\nAre you sure you want to end your turn?\n"
             << "(0) - No\n(1) - Yes\n";
             std::cin >> end_turn_prompt;
             if (end_turn_prompt)
@@ -315,8 +314,9 @@ bool main_action_selector(std::vector<ship> &current_player_fleet, std::vector<s
             return true;
             break;
         case 1:
-            std::cout << "Input the ID of the ship you want to see\n";
+            std::cout << "\nInput the ID of the ship you want to see\n";
             ship_id_to_get_detailed_info = get_int_input();
+            std:: cout << "\n";
             if (ship_id_to_get_detailed_info > current_player_fleet.size())
             {
                 std::cout << "No ship with such ID\n";
@@ -360,7 +360,7 @@ bool main_action_selector(std::vector<ship> &current_player_fleet, std::vector<s
 void order_ship_to_move(std::vector<ship> &player_fleet, std::vector<ship> other_fleet)
 {
     // std::cout << "Choose the ship with which you want to move:\n";
-    std::cout << "Input the ID of the ship you want to move:\n";
+    std::cout << "\nInput the ID of the ship you want to move:\n";
     int id_of_ship_being_moved = get_int_input();
     if (player_fleet[id_of_ship_being_moved].moves_left_in_turn <= 0)
     {

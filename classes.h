@@ -31,7 +31,7 @@ class ship
         void battleship(int num);
         void cruiser(int num);
         void destroyer(int num);
-        // void carrier();
+        void carrier(int num);
         void print_detailed_ship_info();
         void print_short_ship_info();
 
@@ -49,9 +49,9 @@ class ship
             case 2:
                 battleship(num);
                 break;
-            // case 3:
-            //     carrier();
-            //     break;
+            case 3:
+                carrier(num);
+                break;
             default:
                 break;
             }

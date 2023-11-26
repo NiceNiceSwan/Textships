@@ -61,10 +61,21 @@ void ship::destroyer(int num)
     cost = 50;
 }
 
+void ship::carrier(int num)
+{
+    hp = 30;
+    armor = 15;
+    certain_detection_range = 5;
+    uncertain_detection_range = certain_detection_range + 1;
+    speed = 6;
+    moves_left_in_turn = speed;
+    dodge_chance = 0;
+}
+
 void ship::print_detailed_ship_info()
 {
-    std::cout << "Ship name: " << ship_class 
-    << "HP remaining: " << hp 
+    std::cout << "\nShip name: " << ship_class 
+    << "\nHP remaining: " << hp 
     << "\nArmor: " << armor
     << "\nFirepower: " << firepower
     << "\nArmor penetration: " << armor_penetration
