@@ -333,21 +333,32 @@ void shot_handler(ship &attacking_ship, ship &targeted_ship, bool target_is_spot
     
 }
 
+void short_info_print(std::vector<ship> fleet)
+{
+    std::cout << "\nShip statistics: \n";
+    for (size_t i = 0; i < fleet.size(); i++)
+    {
+        std::cout << "\nShip ID: " << i;
+        fleet[i].print_short_ship_info();
+    }
+    
+}
+
 void player_interface(int player, std::vector<ship> &current_player_fleet, std::vector<ship> &other_player_fleet)
 {
     std::cout << "Player " << player << " turn\n";
-    std::cout << "Ship statistics: \n";
-    for (size_t i = 0; i < current_player_fleet.size(); i++)
-    {
-        std::cout << "\nShip ID: " << i;
-        current_player_fleet[i].print_short_ship_info();
-    }
+    // std::cout << "Ship statistics: \n";
+    // for (size_t i = 0; i < current_player_fleet.size(); i++)
+    // {
+    //     std::cout << "\nShip ID: " << i;
+    //     current_player_fleet[i].print_short_ship_info();
+    // }
+    short_info_print(current_player_fleet);
     std::cout << "\n\nDetected enemy ships:\n"; 
     std::vector<bool> spotted_ships_id(other_player_fleet.size(), false);
     ship_spoting_handler(current_player_fleet, other_player_fleet, spotted_ships_id);
     while (main_action_selector(current_player_fleet, other_player_fleet, spotted_ships_id))
     {
-        ship_spoting_handler(current_player_fleet, other_player_fleet, spotted_ships_id);
     }
     
 }
@@ -356,10 +367,12 @@ bool main_action_selector(std::vector<ship> &current_player_fleet, std::vector<s
 {
     std::cout << "\nChoose option: "
     << "\n(0) End turn"
-    << "\n(1) Show detailed ship info"
+    << "\n(1) Clear screen"
+    << "\n(2) Re-print short ship info"
+    << "\n(3) Show detailed ship info"
     // << "\n(2) Show detailes spotting info"
-    << "\n(2) Fire at coordinates"
-    << "\n(3) Order ships to move\n";
+    << "\n(4) Fire at coordinates"
+    << "\n(5) Order ships to move\n";
     int ship_id_to_get_detailed_info;
     bool end_turn_prompt;
     switch (get_int_input())
@@ -375,6 +388,16 @@ bool main_action_selector(std::vector<ship> &current_player_fleet, std::vector<s
             return true;
             break;
         case 1:
+            clear_screen_func();
+            short_info_print(current_player_fleet);
+            ship_spoting_handler(current_player_fleet, other_player_fleet, spotted_ships_id);
+            return true;
+            break;
+        case 2:
+            short_info_print(current_player_fleet);
+            return true;
+            break;
+        case 3:
             std::cout << "\nInput the ID of the ship you want to see\n";
             ship_id_to_get_detailed_info = get_int_input();
             std:: cout << "\n";
@@ -392,12 +415,13 @@ bool main_action_selector(std::vector<ship> &current_player_fleet, std::vector<s
         //     std::cout << "Detailed spotting info placeholder\n";
         //     return true;
         //     break;
-        case 2:
+        case 4:
             fire_at_coordinates(current_player_fleet, other_player_fleet, spotted_ships_id);
             return true;
             break;
-        case 3:
+        case 5:
             order_ship_to_move(current_player_fleet, other_player_fleet);
+            ship_spoting_handler(current_player_fleet, other_player_fleet, spotted_ships_id);
             return true;
             break;
         default:

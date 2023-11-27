@@ -34,6 +34,8 @@ void fire_at_coordinates(std::vector<ship> &attacking_fleet, std::vector<ship> &
 
 void shot_handler(ship &attacking_ship, ship &targeted_ship, bool target_is_spotted);
 
+void short_info_print(std::vector<ship> fleet);
+
 void player_interface(int player, std::vector<ship> &current_player_fleet, std::vector<ship> &other_player_fleet);
 
 bool main_action_selector(std::vector<ship> &current_player_fleet, std::vector<ship> &other_player_fleet, std::vector<bool> spotted_ships_id);
